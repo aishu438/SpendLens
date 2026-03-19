@@ -1,5 +1,5 @@
 // ── Config ───────────────────────────────────────────────
-const API = 'http://localhost:5000/api';
+const API = '/api';
 
 const CATEGORIES = {
   Food:          { emoji: '🍔', color: '#c8f73a' },
