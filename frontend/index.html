@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SpendLens — Expense Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="grain"></div>
+
+  <!-- ── Auth Screen ─────────────────────────────────── -->
+  <div id="authScreen">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">SpendLens</span>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-form="login">Login</button>
+        <button class="auth-tab" data-form="register">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginForm">
+        <div class="form-row">
+          <label>Email</label>
+          <input type="email" id="loginEmail" class="form-input" placeholder="you@example.com"/>
+        </div>
+        <div class="form-row">
+          <label>Password</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="••••••"/>
+        </div>
+        <div class="auth-error" id="loginError"></div>
+        <button class="btn-save" id="btnLogin">Login</button>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerForm" class="hidden">
+        <div class="form-row">
+          <label>Name</label>
+          <input type="text" id="regName" class="form-input" placeholder="Your name"/>
+        </div>
+        <div class="form-row">
+          <label>Email</label>
+          <input type="email" id="regEmail" class="form-input" placeholder="you@example.com"/>
+        </div>
+        <div class="form-row">
+          <label>Password</label>
+          <input type="password" id="regPassword" class="form-input" placeholder="Min 6 characters"/>
+        </div>
+        <div class="auth-error" id="registerError"></div>
+        <button class="btn-save" id="btnRegister">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── App Shell ───────────────────────────────────── -->
+  <div id="appShell">
+
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">SpendLens</span>
+      </div>
+
+      <nav class="nav">
+        <a href="#" class="nav-item active" data-view="dashboard">
+          <span class="nav-icon">⬡</span> Dashboard
+        </a>
+        <a href="#" class="nav-item" data-view="expenses">
+          <span class="nav-icon">⬡</span> Expenses
+        </a>
+        <a href="#" class="nav-item" data-view="analytics">
+          <span class="nav-icon">⬡</span> Analytics
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="budget-ring-label">Monthly Budget</div>
+        <div class="budget-ring-wrap">
+          <svg class="budget-ring" viewBox="0 0 80 80">
+            <circle class="ring-bg" cx="40" cy="40" r="34"/>
+            <circle class="ring-fill" id="budgetRingFill" cx="40" cy="40" r="34"
+              stroke-dasharray="213.6" stroke-dashoffset="213.6"/>
+          </svg>
+          <div class="ring-center"><span id="budgetPct">0%</span></div>
+        </div>
+        <div class="budget-meta">
+          <span id="spentLabel">$0</span> of <span id="budgetLabel">$3,000</span>
+        </div>
+        <div class="user-row">
+          <span id="userNameLabel" class="user-name"></span>
+          <button id="btnLogout" class="logout-btn">Logout</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="page-title" id="pageTitle">Dashboard</h1>
+          <span class="month-badge" id="monthBadge"></span>
+        </div>
+        <button class="btn-add" id="openModal">+ Add Expense</button>
+      </header>
+
+      <!-- Dashboard -->
+      <div class="view" id="view-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card accent">
+            <div class="stat-label">Total Spent</div>
+            <div class="stat-value" id="totalSpent">$0.00</div>
+            <div class="stat-sub">This month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Remaining</div>
+            <div class="stat-value" id="remaining">$3,000.00</div>
+            <div class="stat-sub">of budget</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Transactions</div>
+            <div class="stat-value" id="txCount">0</div>
+            <div class="stat-sub">Total entries</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg / Day</div>
+            <div class="stat-value" id="avgPerDay">$0.00</div>
+            <div class="stat-sub">Spending rate</div>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-head">By Category</div>
+            <div id="categoryBars" class="category-bars"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">Recent Expenses</div>
+            <div id="recentList" class="recent-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expenses -->
+      <div class="view hidden" id="view-expenses">
+        <div class="card full-card">
+          <div class="card-head">
+            All Expenses
+            <div class="filter-row">
+              <select id="filterCat" class="filter-select">
+                <option value="">All Categories</option>
+                <option value="Food">Food</option>
+                <option value="Transport">Transport</option>
+                <option value="Housing">Housing</option>
+                <option value="Health">Health</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Other">Other</option>
+              </select>
+              <input type="month" id="filterMonth" class="filter-input"/>
+            </div>
+          </div>
+          <table class="expense-table">
+            <thead>
+              <tr>
+                <th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="expenseTableBody"></tbody>
+          </table>
+          <div class="empty-state hidden" id="expenseEmpty">No expenses found.</div>
+        </div>
+      </div>
+
+      <!-- Analytics -->
+      <div class="view hidden" id="view-analytics">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-head">Spending by Category</div>
+            <div class="donut-wrap">
+              <canvas id="donutChart" width="220" height="220"></canvas>
+              <div class="donut-legend" id="donutLegend"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">Daily Spending (Last 14 Days)</div>
+            <canvas id="barChart" width="400" height="220"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Expense Modal -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-head">
+        <span>New Expense</span>
+        <button class="modal-close" id="closeModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <label>Description</label>
+          <input type="text" id="expDesc" placeholder="e.g. Grocery run" class="form-input"/>
+        </div>
+        <div class="form-row two">
+          <div>
+            <label>Amount ($)</label>
+            <input type="number" id="expAmount" placeholder="0.00" min="0" step="0.01" class="form-input"/>
+          </div>
+          <div>
+            <label>Date</label>
+            <input type="date" id="expDate" class="form-input"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Category</label>
+          <select id="expCategory" class="form-input">
+            <option value="Food">🍔 Food</option>
+            <option value="Transport">🚗 Transport</option>
+            <option value="Housing">🏠 Housing</option>
+            <option value="Health">💊 Health</option>
+            <option value="Entertainment">🎬 Entertainment</option>
+            <option value="Shopping">🛍️ Shopping</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Note (optional)</label>
+          <input type="text" id="expNote" placeholder="Any extra detail…" class="form-input"/>
+        </div>
+        <button class="btn-save" id="saveExpense">Save Expense</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
