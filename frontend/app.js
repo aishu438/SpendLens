@@ -182,12 +182,12 @@ document.getElementById('saveExpense').addEventListener('click', async () => {
     });
     const data = await res.json();
     if (res.ok) {
-      expenses.unshift(data);
+      
       overlay.classList.add('hidden');
       document.getElementById('expDesc').value   = '';
       document.getElementById('expAmount').value = '';
       document.getElementById('expNote').value   = '';
-      render();
+      awit loadExpenses();
     }
   } catch (err) { console.error('Save failed:', err); }
 
