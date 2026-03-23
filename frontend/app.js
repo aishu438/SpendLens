@@ -187,7 +187,9 @@ document.getElementById('saveExpense').addEventListener('click', async () => {
       document.getElementById('expDesc').value   = '';
       document.getElementById('expAmount').value = '';
       document.getElementById('expNote').value   = '';
-      awit loadExpenses();
+      expenses.unshift(data);
+      render();
+      loadExpenses();
     }
   } catch (err) { console.error('Save failed:', err); }
 
