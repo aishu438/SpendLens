@@ -1,5 +1,5 @@
 // ── Config ───────────────────────────────────────────────
-const API = 'https://spendlens-7qwz.onrender.com/api';
+const API = 'https://spendlens-frontend.onrender.com/api';
 
 const CATEGORIES = {
   Food:          { emoji: '🍔', color: '#c8f73a' },
